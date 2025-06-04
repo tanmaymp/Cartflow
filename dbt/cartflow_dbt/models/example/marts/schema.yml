@@ -1,0 +1,56 @@
+version: 2
+
+models:
+  - name: fct_customer_orders
+    description: "Customer-level order aggregation mart"
+    columns:
+      - name: user_id
+        description: "Customer ID"
+        tests:
+          - not_null
+      - name: total_orders
+        description: "Total number of prior orders"
+      - name: avg_days_between_orders
+        description: "Average number of days between orders"
+      - name: max_order_number
+        description: "Max order number for the user"
+  
+  - name: fct_user_orders
+    description: Fact table capturing user-level order activity, including product counts and reorders
+    columns:
+      - name: user_id
+        description: User identifier
+      - name: order_id
+        description: Order identifier
+        tests: [not_null, unique]
+      - name: order_number
+      - name: order_dow
+      - name: order_hour_of_day
+      - name: days_since_prior_order
+      - name: num_products
+        description: Number of products in the order
+      - name: num_reordered
+        description: Number of products in the order that were reordered
+
+  - name: fct_user_product_reorders
+    description: Aggregated facts for how often a user reorders a specific product
+    columns:
+      - name: user_id
+        description: User identifier
+        tests: [not_null]
+      - name: product_id
+        description: Product identifier
+        tests: [not_null]
+      - name: total_orders
+        description: Total orders by the user for the product
+      - name: times_reordered
+        description: Number of times the product was reordered
+
+  - name: dim_products
+    description: Dimension table for products enriched with aisle and department information
+    columns:
+      - name: product_id
+        tests: [not_null, unique]
+      - name: product_name
+      - name: aisle
+      - name: department

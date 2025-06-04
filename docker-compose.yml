@@ -1,0 +1,73 @@
+version: '3'
+
+x-airflow-common:
+  &airflow-common
+  image: apache/airflow:2.7.2-python3.10
+  environment:
+    &airflow-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://cartflow:cartflow@postgres:5432/cartflow
+    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
+  volumes:
+    - ./airflow/dags:/opt/airflow/dags
+    - ./airflow/logs:/opt/airflow/logs
+    - ./airflow/plugins:/opt/airflow/plugins
+    - ./data:/opt/airflow/data
+  depends_on:
+    - postgres
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: cartflow_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: cartflow
+      POSTGRES_PASSWORD: cartflow
+      POSTGRES_DB: cartflow
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: cartflow_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+
+  airflow-init:
+    <<: *airflow-common
+    container_name: cartflow_airflow-init
+    command: >
+      bash -c "
+        airflow db init &&
+        airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com
+      "
+
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: cartflow_airflow-web
+    command: webserver
+    ports:
+      - "8080:8080"
+    restart: always
+
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: cartflow_airflow-scheduler
+    command: scheduler
+    restart: always
+
+volumes:
+  pgdata:
+  pgadmin_data:

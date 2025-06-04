@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.env
+.env.*
+
+# Airflow
+airflow/logs
+airflow/airflow.db
+airflow/unittests.cfg
+airflow/plugins
+*.pid
+
+#Dataset
+data
+
+# DBT
+dbt/cartflow_dbt/target/
+dbt/cartflow_dbt/manifest.json
+dbt/cartflow_dbt/run_results.json
+dbt/cartflow_dbt/logs
+dbt/logs
+dbt/cartflow_dbt/README.md
+
+# IDE/editor
+.vscode/
+.idea/
