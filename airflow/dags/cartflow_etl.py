@@ -64,6 +64,7 @@ with DAG(
         python_callable=load_csv_to_postgres,
         op_args=['/opt/airflow/data/raw/order_products_prior.csv',
                  'order_products_prior'],
+        execution_timeout=timedelta(hours=1)
     )
 
     load_order_products_train_task = PythonOperator(
