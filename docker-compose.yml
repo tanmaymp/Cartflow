@@ -2,7 +2,11 @@ version: '3'
 
 x-airflow-common:
   &airflow-common
-  image: apache/airflow:2.7.2-python3.10
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image: cartflow-airflow:latest
+
   environment:
     &airflow-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
@@ -14,6 +18,9 @@ x-airflow-common:
     - ./airflow/logs:/opt/airflow/logs
     - ./airflow/plugins:/opt/airflow/plugins
     - ./data:/opt/airflow/data
+    - ./dbt:/opt/airflow/dbt
+    - ./airflow/requirements.txt:/requirements.txt
+    - ./airflow/dbt_profiles:/home/airflow/.dbt
   depends_on:
     - postgres
 
