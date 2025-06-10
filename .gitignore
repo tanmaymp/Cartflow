@@ -21,6 +21,9 @@ airflow/dbt_profiles/
 #Dataset
 data
 
+#Data exports
+airflow/data_exports
+
 # DBT
 dbt/cartflow_dbt/target/
 dbt/cartflow_dbt/manifest.json
