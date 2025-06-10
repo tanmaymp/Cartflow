@@ -1,6 +1,6 @@
 # 🛒 Instacart Market Basket Analysis - Cartflow
 
-## 📌 Motivation
+## Motivation
 
 As a data engineer passionate about transforming raw data into actionable insights, I wanted to explore how modern tools like **Apache Airflow**, **DBT**, and **PostgreSQL** can work together in a real-world data pipeline. The Instacart dataset, with its rich customer-order-product structure, presented the perfect playground to simulate real-world data workflows and produce meaningful business intelligence.
 
@@ -12,7 +12,7 @@ This project was designed to:
 
 ---
 
-## 🏗️ Project Overview
+## Project Overview
 
 **Dataset:** [Instacart Market Basket Analysis on Kaggle](https://www.kaggle.com/c/instacart-market-basket-analysis)
 
@@ -24,7 +24,7 @@ This project was designed to:
 * **Python (Pandas + SQLAlchemy)** – Data ingestion/export
 * **Tableau Public** – Dashboarding
 
-### 🔄 End-to-End Workflow
+### End-to-End Workflow
 
 ```
 CSV Data → Ingest via Airflow → Store in PostgreSQL → Transform with DBT → Export to CSV → Visualize in Tableau
@@ -32,11 +32,11 @@ CSV Data → Ingest via Airflow → Store in PostgreSQL → Transform with DBT �
 
 ---
 
-## 📊 Dashboard: Instacart User Behavior & Reorder Trends
+## Dashboard: Instacart User Behavior & Reorder Trends
 
 Explore the **live dashboard on Tableau Public**: [👉 View Dashboard](https://www.kaggle.com/datasets/yasserh/instacart-online-grocery-basket-analysis-dataset)
 
-### 📌 Key Insights:
+### Key Insights:
 
 1. **User Order Volume** – How many orders do users typically place?
 2. **Order Frequency** – Distribution of average days between orders
@@ -52,7 +52,7 @@ Explore the **live dashboard on Tableau Public**: [👉 View Dashboard](https://
 
 ---
 
-## 🔧 Pipeline Architecture
+## Pipeline Architecture
 
 ![Data Pipeline Architecture](images/cartflow_architecture.jpg)
 
@@ -66,7 +66,7 @@ Each DAG is triggered sequentially using Airflow’s `TriggerDagRunOperator`, en
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 cartflow/
@@ -89,7 +89,7 @@ cartflow/
 
 ---
 
-## 🚀 Future Improvements
+## Future Improvements
 
 * Add more KPIs to dashboards (AOV, top aisles/departments)
 * Automate dashboard refresh using Tableau Webhooks or API
@@ -97,7 +97,7 @@ cartflow/
 
 ---
 
-## 👤 Author
+## Author
 
 **Tanmay Parulekar**  
 [LinkedIn](https://www.linkedin.com/in/tanmay-parulekar) • [GitHub](https://github.com/tanmaymp)
