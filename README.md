@@ -14,7 +14,7 @@ This project was designed to:
 
 ## Project Overview
 
-**Dataset:** [Instacart Market Basket Analysis on Kaggle](https://www.kaggle.com/c/instacart-market-basket-analysis)
+**Dataset:** [Instacart Market Basket Analysis on Kaggle](https://www.kaggle.com/datasets/psparks/instacart-market-basket-analysis)
 
 **Tech Stack:**
 
