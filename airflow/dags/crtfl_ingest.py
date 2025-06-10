@@ -1,63 +1,74 @@
 from datetime import timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.utils.dates import days_ago
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 import os
 import time
+from dotenv import load_dotenv
+load_dotenv()
 
-# Define the Postgres connection details from environment or Airflow variables
+# Postgres connection details from environment
 PG_CONNECTION_STRING = os.getenv("PG_CONNECTION_STRING")
 
 # Function to load CSV files into PostgreSQL
 
-
 def load_csv_to_postgres(csv_file, table_name, chunksize=500000):
     """
-    Load a CSV file into a PostgreSQL table.
-    :param csv_file: The path to the CSV file
-    :param table_name: The name of the PostgreSQL table
+    Load a CSV file into PostgreSQL:
+    - Creates the table if it does not exist.
+    - If table exists, truncates and appends (preserves views).
     """
-    # Read CSV file
-    # df = pd.read_csv(csv_file)
-
-    # Create connection to PostgreSQL
     time.sleep(5)
     engine = create_engine(PG_CONNECTION_STRING)
+    inspector = inspect(engine)
 
-    chunk_iter = pd.read_csv(csv_file, chunksize=chunksize)
-    for i, chunk in enumerate(chunk_iter):
-        mode = 'replace' if i == 0 else 'append'
-        chunk.to_sql(table_name, engine, if_exists=mode, index=False)
-        print(f"Chunk {i+1} loaded for {table_name}")
+    table_exists = inspector.has_table(table_name)
+
+    if not table_exists:
+        print(f"Table {table_name} does not exist. Creating and loading.")
+        chunk_iter = pd.read_csv(csv_file, chunksize=chunksize)
+        for i, chunk in enumerate(chunk_iter):
+            chunk.to_sql(table_name, engine, if_exists='append', index=False)
+            print(f"Chunk {i+1} loaded for {table_name}")
+    else:
+        print(f"Table {table_name} exists. Truncating and reloading.")
+        with engine.begin() as conn:
+            conn.execute(text(f'TRUNCATE TABLE {table_name}'))
+            # conn.commit()
+
+        chunk_iter = pd.read_csv(csv_file, chunksize=chunksize)
+        for i, chunk in enumerate(chunk_iter):
+            chunk.to_sql(table_name, engine, if_exists='append', index=False)
+            print(f"Chunk {i+1} loaded for {table_name}")
 
 
-# Define the default arguments
+# default arguments
 default_args = {
     'owner': 'airflow',
     'retries': 0,
     'retry_delay': timedelta(minutes=1),
 }
 
-# Create the DAG
+# DAG
 with DAG(
-    'instacart_etl_dag',
+    dag_id='cartflow_ingest',
     default_args=default_args,
     description='ETL DAG for loading Instacart data into PostgreSQL',
-    schedule_interval=None,  # Set this to None for manual execution or a cron schedule
+    schedule_interval=None,
     start_date=days_ago(1),
     catchup=False,
 ) as dag:
 
-    # Task 1: Load CSV data into Postgres
+    # Task 1 - Ingest orders.csv
     load_orders_task = PythonOperator(
         task_id='load_orders_csv',
         python_callable=load_csv_to_postgres,
         op_args=['/opt/airflow/data/raw/orders.csv', 'orders'],
     )
 
+    # Task 2 - Ingest order_products_prior.csv
     load_order_products_prior_task = PythonOperator(
         task_id='load_order_products_prior_csv',
         python_callable=load_csv_to_postgres,
@@ -66,6 +77,7 @@ with DAG(
         execution_timeout=timedelta(hours=1)
     )
 
+    # Task 3 - Ingest order_products__train.csv
     load_order_products_train_task = PythonOperator(
         task_id='load_order_products_train_csv',
         python_callable=load_csv_to_postgres,
@@ -73,25 +85,26 @@ with DAG(
                  'order_products_train'],
     )
 
+    # Task 4 - Ingest aisles.csv
     load_aisles_task = PythonOperator(
         task_id='load_aisles_csv',
         python_callable=load_csv_to_postgres,
         op_args=['/opt/airflow/data/raw/aisles.csv', 'aisles'],
     )
 
+    # Task 5 - Ingest departments.csv
     load_departments_task = PythonOperator(
         task_id='load_departments_csv',
         python_callable=load_csv_to_postgres,
         op_args=['/opt/airflow/data/raw/departments.csv', 'departments'],
     )
 
+    # Task 6 - Ingest products.csv
     load_products_task = PythonOperator(
         task_id='load_products_csv',
         python_callable=load_csv_to_postgres,
         op_args=['/opt/airflow/data/raw/products.csv', 'products'],
     )
 
-    # Define task dependencies
+    # task dependencies
     load_orders_task >> load_aisles_task >> load_departments_task >> load_products_task >> load_order_products_train_task >> load_order_products_prior_task  
-
-    # This ensures all CSV loading tasks run before any DBT transformations
