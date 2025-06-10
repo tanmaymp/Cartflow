@@ -34,7 +34,7 @@ CSV Data → Ingest via Airflow → Store in PostgreSQL → Transform with DBT �
 
 ## 📊 Dashboard: Instacart User Behavior & Reorder Trends
 
-Explore the **live dashboard on Tableau Public**: [👉 View Dashboard](https://public.tableau.com/views/InstacartUserBehaviorReorderTrends/Dashboard1?:language=en-US&publish=yes&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
+Explore the **live dashboard on Tableau Public**: [👉 View Dashboard](https://www.kaggle.com/datasets/yasserh/instacart-online-grocery-basket-analysis-dataset)
 
 ### 📌 Key Insights:
 
@@ -99,7 +99,7 @@ cartflow/
 
 ## 👤 Author
 
-**[Your Name]**  
+**Tanmay Parulekar**  
 [LinkedIn](https://www.linkedin.com/in/tanmay-parulekar) • [GitHub](https://github.com/tanmaymp)
 
 ---
