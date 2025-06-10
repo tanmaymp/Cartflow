@@ -9,8 +9,7 @@ import os
 import time
 
 # Define the Postgres connection details from environment or Airflow variables
-PG_CONNECTION_STRING = os.getenv(
-    "PG_CONNECTION_STRING", "postgresql://cartflow:cartflow@postgres:5432/cartflow")
+PG_CONNECTION_STRING = os.getenv("PG_CONNECTION_STRING")
 
 # Function to load CSV files into PostgreSQL
 

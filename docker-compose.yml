@@ -21,6 +21,7 @@ x-airflow-common:
     - ./dbt:/opt/airflow/dbt
     - ./airflow/requirements.txt:/requirements.txt
     - ./airflow/dbt_profiles:/home/airflow/.dbt
+    - ./airflow/data_exports:/opt/airflow/data_exports
   depends_on:
     - postgres
 
