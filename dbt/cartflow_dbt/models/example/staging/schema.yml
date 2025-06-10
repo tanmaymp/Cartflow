@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: public
-    database: cartflow  # Replace with actual DB name
+    database: cartflow
     schema: public
     tables:
       - name: orders
@@ -13,24 +13,6 @@ sources:
       - name: departments
 
 models:
-  - name: my_first_dbt_model
-    description: "A starter dbt model"
-    columns:
-      - name: id
-        description: "The primary key for this table"
-        data_tests:
-          - unique
-          - not_null
-
-  - name: my_second_dbt_model
-    description: "A starter dbt model"
-    columns:
-      - name: id
-        description: "The primary key for this table"
-        data_tests:
-          - unique
-          - not_null
-
   - name: stg_orders
     description: Staging model for orders table with standardized column names.
     columns:

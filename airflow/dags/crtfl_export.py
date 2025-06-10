@@ -7,6 +7,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
+# default arguments
 default_args = {
     'owner': 'airflow',
     'start_date': datetime(2024, 1, 1),
@@ -14,8 +15,10 @@ default_args = {
 }
 
 EXPORT_PATH = "/opt/airflow/data_exports"
+# Postgres connection details from environment
 PG_CONNECTION_STRING = os.getenv("PG_CONNECTION_STRING")
 
+# Function to export PostgreSQL table to CSV file
 def export_table_to_csv(table_name):
     engine = create_engine(PG_CONNECTION_STRING)
     query = f"SELECT * FROM {table_name};"
@@ -24,30 +27,35 @@ def export_table_to_csv(table_name):
     df.to_csv(filename, index=False)
     print(f"Exported {table_name} to {filename}")
 
+# DAG
 with DAG(
-    dag_id="export_marts_to_csv",
+    dag_id='cartflow_export',
     default_args=default_args,
     schedule_interval=None,
     catchup=False,
     description="Export DBT marts to CSV"
 ) as dag:
 
+    # Task 1 - Export fact_user_orders.csv
     export_user_orders = PythonOperator(
         task_id="export_fct_user_orders",
         python_callable=export_table_to_csv,
-        op_args=["fact_user_orders"]
+        op_args=["fct_user_orders"]
     )
 
+    # Task 2 - Export fct_user_product_reorders.csv
     export_user_reorders = PythonOperator(
         task_id="export_fct_user_product_reorders",
         python_callable=export_table_to_csv,
         op_args=["fct_user_product_reorders"]
     )
 
+    # Task 3 - Export fct_customer_orders.csv
     export_customer_orders = PythonOperator(
         task_id="export_fct_customer_orders",
         python_callable=export_table_to_csv,
         op_args=["fct_customer_orders"]
     )
 
+    # task dependencies
     export_user_orders >> export_user_reorders >> export_customer_orders
